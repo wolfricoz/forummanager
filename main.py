@@ -5,56 +5,59 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from sqlalchemy.orm import Session
+import logging
 
-from components import database
+from classes.config import GuildConfig
 
 # Creates database
-database.database().create()
-session = Session(database.engine)
 # loads env and variables
 load_dotenv('.env')
-token = os.getenv('TOKEN')
+token = os.getenv('DISCORD_TOKEN')
 PREFIX = os.getenv('PREFIX')
 # declares the bots intent
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-activity = discord.Activity(type=discord.ActivityType.watching, name="over RMR")
+activity = discord.Activity(type=discord.ActivityType.watching, name="the forums")
 bot = commands.Bot(command_prefix=PREFIX, case_insensitive=False, intents=intents, activity=activity)
 
 
 # start up event; bot.tree.sync is required for the slash commands.
 @bot.event
-async def on_ready():
-    await bot.tree.sync()
-    print("Commands synced, start up _done_")
+async def on_ready() :
+	await bot.tree.sync()
+	guilds = [guild.name for guild in bot.guilds]
+	for guild in bot.guilds :
+		GuildConfig(guild.id)
+
+	logging.info(f"Bot started in {len(guilds)} guilds: {guilds}")
+	print("Commands synced, start up _done_")
 
 
 # Grabs all the modules from the modules folder and loads them.
 @bot.event
-async def setup_hook():
-    for filename in os.listdir("modules"):
+async def setup_hook() :
+	for filename in os.listdir("modules") :
 
-        if filename.endswith('.py'):
-            await bot.load_extension(f"modules.{filename[:-3]}")
-            print({filename[:-3]})
-        else:
-            print(f'Unable to load {filename[:-3]}')
+		if filename.endswith('.py') :
+			await bot.load_extension(f"modules.{filename[:-3]}")
+			print({filename[:-3]})
+		else :
+			print(f'Unable to load {filename[:-3]}')
 
 
 # reloads all the modules.
 @bot.command(aliases=["cr", "reload"])
 @commands.is_owner()
-async def cogreload(ctx):
-    filesloaded = []
-    for filename in os.listdir("modules"):
-        if filename.endswith('.py'):
-            await bot.reload_extension(f"modules.{filename[:-3]}")
-            filesloaded.append(filename[:-3])
-    fp = ', '.join(filesloaded)
-    await ctx.send(f"Modules loaded: {fp}")
-    await bot.tree.sync()
+async def cogreload(ctx) :
+	filesloaded = []
+	for filename in os.listdir("modules") :
+		if filename.endswith('.py') :
+			await bot.reload_extension(f"modules.{filename[:-3]}")
+			filesloaded.append(filename[:-3])
+	fp = ', '.join(filesloaded)
+	await ctx.send(f"Modules loaded: {fp}")
+	await bot.tree.sync()
 
 
 # runs the bot with the token
