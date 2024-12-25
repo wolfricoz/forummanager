@@ -5,6 +5,7 @@ import discord
 from discord import Thread
 from discord.ext import commands
 
+from classes.config import GuildConfig
 from classes.support.queue import queue
 
 
@@ -21,6 +22,9 @@ class ForumTasks :
 	async def start(self) :
 		"""This starts the checking of the forum and will walk through all the tasks."""
 		await self.recover_archived_posts()
+		config = GuildConfig(self.forum.guild.id)
+		if not config.get("cleanup"):
+			return logging.info(f"Cleanup is disabled for {thread.guild.name}")
 		for thread in self.threads :
 			queue().add(self.cleanup_forum(thread), priority=0)
 
@@ -29,11 +33,11 @@ class ForumTasks :
 		logging.info("recovering archived posts")
 		async for archived_thread in self.archived :
 			if archived_thread.owner.id not in self.members :
-				queue().add(archived_thread.delete(), priority=0)
+				queue().add(archived_thread.delete())
 				continue
 			if archived_thread.archived is False :
 				continue
-			queue().add(archived_thread.edit(archived=False), priority=0)
+			queue().add(archived_thread.edit(archived=False))
 
 	async def cleanup_forum(self, thread: discord.Thread) :
 		logging.info("Cleaning up the forum")
