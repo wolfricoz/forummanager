@@ -20,6 +20,7 @@ intents.message_content = True
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="the forums")
 bot = commands.Bot(command_prefix=PREFIX, case_insensitive=False, intents=intents, activity=activity)
+bot.DEV = os.getenv("DEV")
 
 
 # start up event; bot.tree.sync is required for the slash commands.
@@ -29,8 +30,8 @@ async def on_ready() :
 	guilds = [guild.name for guild in bot.guilds]
 	for guild in bot.guilds :
 		GuildConfig(guild.id)
-
-	logging.info(f"Bot started in {len(guilds)} guilds: {guilds}")
+	dev_channel = bot.get_channel(int(bot.DEV))
+	await dev_channel.send(f"Bot started in {len(guilds)} guilds: {guilds}")
 	print("Commands synced, start up _done_")
 
 

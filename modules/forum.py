@@ -26,10 +26,15 @@ class Forum(commands.GroupCog, name="forum") :
 		data = {
 			"Threads"  : len(forum.threads),
 			"archived" : len([thread for thread in forum.threads if thread.archived]),
-			"tags"     : [tag.name for tag in forum.available_tags],
+			"tags"     : ", ".join([tag.name for tag in forum.available_tags]),
+			"layout"   : forum.default_layout,
+			"sort mode"     : forum.default_sort_order,
+			"slowmode" : forum.default_thread_slowmode_delay,
+			"auto archive" : forum.default_auto_archive_duration,
+			"reaction" : forum.default_reaction_emoji
 		}
 		for key, value in data.items() :
-			embed.add_field(name=key, value=value)
+			embed.add_field(name=key, value=value, inline=False)
 		await send_message(interaction.channel, embed=embed)
 
 	@app_commands.command(name="recover", description="Recover archived posts")
