@@ -34,6 +34,9 @@ class ForumTasks :
 		async for archived_thread in self.archived :
 			if archived_thread.archived is False :
 				continue
+			if len(self.forum.threads) >= 1000:
+				logging.info(f"Too many threads in {self.forum.name}, skipping")
+				return
 			queue().add(archived_thread.edit(archived=False))
 
 	async def cleanup_forum(self, thread: discord.Thread) :
