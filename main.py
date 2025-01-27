@@ -22,8 +22,6 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="the forums")
 bot = commands.Bot(command_prefix=PREFIX, case_insensitive=False, intents=intents, activity=activity)
 bot.DEV = os.getenv("DEV")
-print(bot.DEV)
-dev_channel = bot.get_channel(int(bot.DEV))
 
 
 # start up event; bot.tree.sync is required for the slash commands.
@@ -33,19 +31,26 @@ async def on_ready() :
 	guilds = [guild.name for guild in bot.guilds]
 	for guild in bot.guilds :
 		GuildConfig(guild.id)
+	dev_channel = bot.get_channel(int(os.getenv("DEV")))
 	await dev_channel.send(f"Bot started in {len(guilds)} guilds: {guilds}")
 	print("Commands synced, start up _done_")
 
 
 @bot.event
-async def on_guild_join(guild):
+async def on_guild_join(guild) :
 	GuildConfig(guild.id)
-	await guild.system_channel.send("Hello! I am Forum Manager. I am here to help you with your forum channels. Please make sure to set up the channel permissions correctly and I will do the rest! The bot will automatically restore archived posts every 48 hours, if you want to trigger this manually, use the /forum recover command.")
+	await guild.system_channel.send(
+		"Hello! I am Forum Manager. I am here to help you with your forum channels. Please make sure to set up the channel permissions correctly and I will do the rest! The bot will automatically restore archived posts every 48 hours, if you want to trigger this manually, use the /forum recover command.")
+	dev_channel = bot.get_channel(int(os.getenv("DEV")))
 	await send_message(dev_channel, f"Bot joined {guild.name}({guild.id}) owned by {guild.owner.name}({guild.owner.id})")
 
+
 @bot.event
-async def on_guild_remove(guild):
-	await send_message(dev_channel, f"Bot removed from {guild.name}({guild.id}) owned by {guild.owner.name}({guild.owner.id})")
+async def on_guild_remove(guild) :
+	dev_channel = bot.get_channel(int(os.getenv("DEV")))
+	await send_message(dev_channel,
+	                   f"Bot removed from {guild.name}({guild.id}) owned by {guild.owner.name}({guild.owner.id})")
+
 
 # Grabs all the modules from the modules folder and loads them.
 @bot.event
