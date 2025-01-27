@@ -4,6 +4,7 @@ import re
 import discord
 from discord import app_commands
 from discord.ext import commands
+from requests import session
 
 from classes.config import GuildConfig
 from classes.forumtasks import ForumTasks
@@ -59,11 +60,11 @@ class Forum(commands.GroupCog, name="forum") :
 		f = await forum.clone(name=f"{name if name else forum.name}-Copy")
 		[await f.create_tag(name=tag.name, moderated=tag.moderated, emoji=tag.emoji,
 		                    reason="Forum copied through forum manager") for tag in forum.available_tags]
-		await f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
+		queue().add(f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
 		             default_auto_archive_duration=forum.default_auto_archive_duration,
 		             default_layout=forum.default_layout,
 		             default_sort_order=forum.default_sort_order,
-		             default_reaction_emoji=forum.default_reaction_emoji)
+		             default_reaction_emoji=forum.default_reaction_emoji), priority=2)
 		await send_message(interaction.channel, f"Forum {forum.mention} copied to {f.mention}")
 
 	@app_commands.command(name="cleanup_toggle", description="[config] Toggle the removal of threads from users that left")
