@@ -18,7 +18,7 @@ class Tools(commands.Cog) :
 		self.forum_manager.cancel()
 
 	# Your first app command!
-	@tasks.loop(hours=6)
+	@tasks.loop(hours=48)
 	async def forum_manager(self) -> None :
 		"""Searches the forums in all guilds and starts the forum manager."""
 		logging.info("starting the forum manager! The forum will be cleaned.")

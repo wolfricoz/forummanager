@@ -72,9 +72,9 @@ class Forum(commands.GroupCog, name="forum") :
 		             default_reaction_emoji=forum.default_reaction_emoji), priority=2)
 		await send_message(interaction.channel, f"Forum {forum.mention} copied to {f.mention}")
 
-	@app_commands.command(name="cleanup_toggle", description="[config] Toggle the removal of threads from users that left")
+	@app_commands.command(name="cleanup_toggle")
 	async def cleanup_toggle(self, interaction: discord.Interaction, active: bool) :
-		"""Toggle the removal of threads from users that left"""
+		"""Toggle the removal of threads from users that left. Disabled by default"""
 		config = GuildConfig(interaction.guild.id)
 		config.set("cleanup", active)
 		await send_response(interaction, f"Cleanup is now {active}", ephemeral=True)

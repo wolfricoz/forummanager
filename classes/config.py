@@ -31,7 +31,7 @@ class GuildConfig():
 		self.dir_exists()
 		with open(self.config_path, "w") as f:
 			json.dump({
-				"cleanup" : True
+				"cleanup" : False
 			}, f)
 
 	def load_config(self):
