@@ -32,7 +32,7 @@ async def on_ready() :
 	for guild in bot.guilds :
 		GuildConfig(guild.id)
 	dev_channel = bot.get_channel(int(os.getenv("DEV")))
-	await dev_channel.send(f"Bot started in {len(guilds)} guilds: {guilds}")
+	await dev_channel.send(f"Bot started in {len(guilds)} guilds")
 	print("Commands synced, start up _done_")
 
 
