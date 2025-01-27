@@ -22,6 +22,7 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="the forums")
 bot = commands.Bot(command_prefix=PREFIX, case_insensitive=False, intents=intents, activity=activity)
 bot.DEV = os.getenv("DEV")
+print(bot.DEV)
 dev_channel = bot.get_channel(int(bot.DEV))
 
 
