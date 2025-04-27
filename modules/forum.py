@@ -62,7 +62,7 @@ class Forum(commands.GroupCog, name="forum") :
 	async def copy(self, interaction: discord.Interaction, forum: discord.ForumChannel, name: str = None) :
 		"""Copy a forum with all settings!"""
 		await send_response(interaction, "Copying a forum with all settings!", ephemeral=True)
-		f = await forum.clone(name=f"{name if name else forum.name}-Copy")
+		f = await forum.clone(name=f"{name if name else forum.name}-Copy", category=forum.category)
 		[await f.create_tag(name=tag.name, moderated=tag.moderated, emoji=tag.emoji,
 		                    reason="Forum copied through forum manager") for tag in forum.available_tags]
 		queue().add(f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
