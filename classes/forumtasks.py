@@ -24,7 +24,7 @@ class ForumTasks :
 		await self.recover_archived_posts()
 		config = GuildConfig(self.forum.guild.id)
 		if not config.get("cleanup"):
-			return logging.info(f"Cleanup is disabled for {thread.guild.name}")
+			return logging.info(f"Cleanup is disabled for {self.forum.guild.name}")
 		for thread in self.threads :
 			queue().add(self.cleanup_forum(thread), priority=0)
 
@@ -32,11 +32,11 @@ class ForumTasks :
 		"""Loop through archived posts and send a reminder there."""
 		logging.info("recovering archived posts")
 		async for archived_thread in self.archived :
-			if archived_thread.owner.id not in self.members :
-				queue().add(archived_thread.delete())
-				continue
 			if archived_thread.archived is False :
 				continue
+			if len(self.forum.threads) >= 1000:
+				logging.info(f"Too many threads in {self.forum.name}, skipping")
+				return
 			queue().add(archived_thread.edit(archived=False))
 
 	async def cleanup_forum(self, thread: discord.Thread) :

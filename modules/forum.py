@@ -4,6 +4,7 @@ import re
 import discord
 from discord import app_commands
 from discord.ext import commands
+from requests import session
 
 from classes.config import GuildConfig
 from classes.forumtasks import ForumTasks
@@ -61,20 +62,19 @@ class Forum(commands.GroupCog, name="forum") :
 	async def copy(self, interaction: discord.Interaction, forum: discord.ForumChannel, name: str = None) :
 		"""Copy a forum with all settings!"""
 		await send_response(interaction, "Copying a forum with all settings!", ephemeral=True)
-		f = await forum.clone(name=f"{name if name else forum.name}-Copy")
-
+		f = await forum.clone(name=f"{name if name else forum.name}-Copy", category=forum.category)
 		[await f.create_tag(name=tag.name, moderated=tag.moderated, emoji=tag.emoji,
-		                    reason="Forum copied through forum manager") for tag in forum.available_tags if tag.name not in f.available_tags]
-		await f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
+		                    reason="Forum copied through forum manager") for tag in forum.available_tags]
+		queue().add(f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
 		             default_auto_archive_duration=forum.default_auto_archive_duration,
 		             default_layout=forum.default_layout,
 		             default_sort_order=forum.default_sort_order,
-		             default_reaction_emoji=forum.default_reaction_emoji)
+		             default_reaction_emoji=forum.default_reaction_emoji), priority=2)
 		await send_message(interaction.channel, f"Forum {forum.mention} copied to {f.mention}")
 
-	@app_commands.command(name="cleanup_toggle", description="[config] Toggle the removal of threads from users that left")
+	@app_commands.command(name="cleanup_toggle")
 	async def cleanup_toggle(self, interaction: discord.Interaction, active: bool) :
-		"""Toggle the removal of threads from users that left"""
+		"""Toggle the removal of threads from users that left. Disabled by default"""
 		config = GuildConfig(interaction.guild.id)
 		config.set("cleanup", active)
 		await send_response(interaction, f"Cleanup is now {active}", ephemeral=True)

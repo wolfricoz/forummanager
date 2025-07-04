@@ -13,14 +13,14 @@ class queueTask(commands.Cog):
     def cog_unload(self):
         self.queue.cancel()
 
-    @tasks.loop(seconds=0.3)
+    @tasks.loop(seconds=1.5)
     async def queue(self):
         await queue().start()
 
-    @tasks.loop(seconds=3)
+    @tasks.loop(seconds=5)
     async def display_status(self):
         await self.bot.wait_until_ready()
-        status = "Watching over the community"
+        status = "Reading forum posts"
         if not queue().empty():
             status = queue().status()
 
