@@ -85,7 +85,11 @@ class Forum(commands.GroupCog, name="forum") :
 		await send_response(interaction, f"Purge all threads in {forum.name}", ephemeral=True)
 		for thread in forum.threads :
 			if notify_user:
-				starter_msg = await thread.fetch_message(thread.id)
+				try:
+					starter_msg = await thread.fetch_message(thread.id)
+				except discord.NotFound:
+					logging.error(f"Could not fetch message for thread {thread.name} in {forum.name}, it might have been deleted.")
+					starter_msg = None
 				if not starter_msg:
 					logging.error(f"Could not fetch message for thread {thread.name} in {forum.name}")
 					queue().add(thread.delete())
