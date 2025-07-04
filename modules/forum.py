@@ -64,7 +64,7 @@ class Forum(commands.GroupCog, name="forum") :
 		await send_response(interaction, "Copying a forum with all settings!", ephemeral=True)
 		f = await forum.clone(name=f"{name if name else forum.name}-Copy", category=forum.category)
 		[await f.create_tag(name=tag.name, moderated=tag.moderated, emoji=tag.emoji,
-		                    reason="Forum copied through forum manager") for tag in forum.available_tags]
+		                    reason="Forum copied through forum manager") for tag in forum.available_tags if tag.name not in f.available_tags]
 		queue().add(f.edit(default_thread_slowmode_delay=forum.default_thread_slowmode_delay,
 		             default_auto_archive_duration=forum.default_auto_archive_duration,
 		             default_layout=forum.default_layout,
