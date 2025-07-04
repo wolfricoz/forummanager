@@ -79,6 +79,24 @@ class Forum(commands.GroupCog, name="forum") :
 		config.set("cleanup", active)
 		await send_response(interaction, f"Cleanup is now {active}", ephemeral=True)
 
+	@app_commands.command(name="purge")
+	async def purge(self, interaction: discord.Interaction, forum: discord.ForumChannel, notify_user: bool = False) :
+		"""Purge all threads in a forum, notify_user returns the contents of the thread to the user that started it."""
+		await send_response(interaction, f"Purge all threads in {forum.name}", ephemeral=True)
+		for thread in forum.threads :
+			if notify_user:
+				starter_msg = await thread.fetch_message(thread.id)
+				if not starter_msg:
+					logging.error(f"Could not fetch message for thread {thread.name} in {forum.name}")
+					queue().add(thread.delete())
+					continue
+				queue().add(send_message(thread.owner, f"Your thread {thread.name} in {forum.name} is being purged, here are the contents:"
+				                                       f"\ntitle: {thread.name}\ncontent: {starter_msg.content}"), priority=2)
+			queue().add(thread.delete())
+		else:
+			queue().add(send_message(interaction.channel, f"Purge complete for {forum.name}"), 0)
+		queue().add(send_message(interaction.channel, f"Queueing purge of {len(forum.threads)} threads in {forum.name}."), priority=2)
+
 
 
 async def setup(bot) :
