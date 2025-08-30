@@ -4,3 +4,6 @@ SQLAlchemy>=2.0.18
 PyMySQL>=1.0.2
 pytz>=2022.6
 sqlalchemy_utils
+requests
+psycopg2-binary
+gunicorn
