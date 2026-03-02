@@ -29,10 +29,13 @@ bot.DEV = os.getenv("DEV")
 async def on_ready() :
 	await bot.tree.sync()
 	guilds = [guild.name for guild in bot.guilds]
+	guild_info = "I'm in: "
 	for guild in bot.guilds :
 		GuildConfig(guild.id)
+		guild_info += f"\n{guild.name}({guild.id}) owned by {guild.owner}"
 	dev_channel = bot.get_channel(int(os.getenv("DEV")))
 	await dev_channel.send(f"Bot started in {len(guilds)} guilds")
+	await dev_channel.send(guild_info)
 	print("Commands synced, start up _done_")
 
 
